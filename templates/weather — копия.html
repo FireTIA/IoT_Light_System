@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Погода | DHT22</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    
+    .weather-values, .stats {
+      font-size: 1.2rem;
+      margin: 10px 0;
+    }
+    button {
+      background-color: #2979ff;
+      border: none;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #5393ff;
+    }
+    .checkbox-container {
+      margin-top: 10px;
+    }
+
+    /* Стили для сворачиваемых блоков */
+    .collapsible {
+      background-color: #525252;
+      color: #fff;
+      cursor: pointer;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 1.1rem;
+      border-radius: 4px;
+      margin: 5px 0;
+    }
+    .collapsible.active, .collapsible:hover {
+      background-color: #323232;
+    }
+    .content {
+      padding: 0 15px;
+      display: none;
+      overflow: hidden;
+      background-color: #1e1e1e;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .content p {
+      margin: 5px 0;
+    }
+
+    /* Стили для нижнего информационного блока */
+    .text_down {
+      background-color: #003d4240;
+      position: relative;
+      bottom: -485px; /* отступ от нижнего края */
+      left: 50%;
+      transform: translateX(-50%); /* центрирует элемент по горизонтали */
+      color: #ffffff45;
+      text-align: center;
+      width: 16%; /* чтобы текст всегда был в центре */
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 1px;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 1px;
+    }
+    @media screen and (max-width: 768px) {
+      .text_down {
+        width: 90%; /* Занимает 90% ширины экрана */
+        font-size: 14px; /* Уменьшаем шрифт */
+        padding: 8px; /* Добавляем отступы */
+      }
+    }
+
+    .btn_up {
+      position: absolute;
+      left: 45%;
+      top: 10px;
+      width: 170px;
+      background-color: #262626;
+      color: #fff;
+      border: none;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 15px;
+      box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16), 0px 3px 6px rgba(0, 0, 0, 0.23);
+    }
+    .btn_up:hover {
+      background-color: #393939;
+    }
+
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Index_Standart.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Карточка с основными показателями -->
+    <div class="card">
+      <button onclick="goBack()" class="btn_up">Назад в меню</button><br>
+      <h1>Мониторинг погоды (DHT22)</h1>
+      <div class="weather-values">
+        <p>Температура: <span id="temp">...</span> °C</p>
+        <p>Влажность: <span id="hum">...</span> %</p>
+      </div>
+      <button id="refreshBtn">Обновить</button>
+      <div class="checkbox-container">
+        
+        <label for="autoUpdateCheckbox">Автообновление: <input type="checkbox" id="autoUpdateCheckbox" /></label>
+      </div>
+    </div>
+
+    <!-- Карточка со статистикой -->
+    <div class="card">
+      <h2>Статистика за периоды</h2>
+      <!-- Кнопка для раскрытия/сворачивания всего блока статистики -->
+      <button type="button" class="collapsible">Показать/Скрыть всю статистику</button>
+      <div class="content" id="allStats" style="align-items: center;">
+        <!-- Каждый интервал оформлен как отдельный сворачиваемый блок -->
+        <button type="button" class="collapsible">За 1 минуту</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_1m">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_1m">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_1m">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_1m">...</span> %</p>
+        </div>
+        
+        <br>
+
+        <button type="button" class="collapsible">За 5 минут</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_5m">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_5m">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_5m">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_5m">...</span> %</p>
+        </div>
+        
+        <br>
+
+        <button type="button" class="collapsible">За 15 минут</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_15m">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_15m">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_15m">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_15m">...</span> %</p>
+        </div>
+        
+        <br>
+
+        <button type="button" class="collapsible">За 30 минут</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_30m">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_30m">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_30m">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_30m">...</span> %</p>
+        </div>
+
+        <br>
+        
+        <button type="button" class="collapsible">За 60 минут</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_60m">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_60m">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_60m">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_60m">...</span> %</p>
+        </div>
+
+        <br>
+        
+        <button type="button" class="collapsible">За 2 часа</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_2h">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_2h">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_2h">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_2h">...</span> %</p>
+        </div>
+
+        <br>
+        
+        <button type="button" class="collapsible">За 4 часа</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_4h">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_4h">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_4h">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_4h">...</span> %</p>
+        </div>
+
+        <br>
+        
+        <button type="button" class="collapsible">За 6 часов</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_6h">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_6h">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_6h">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_6h">...</span> %</p>
+        </div>
+
+        <br>
+        
+        <button type="button" class="collapsible">За 12 часов</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_12h">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_12h">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_12h">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_12h">...</span> %</p>
+        </div>
+
+        <br>
+        
+        <button type="button" class="collapsible">За 24 часа</button>
+        <div class="content">
+          <p>Макс. температура: <span id="temp_max_24h">...</span> °C</p>
+          <p>Мин. температура: <span id="temp_min_24h">...</span> °C</p>
+          <p>Макс. влажность: <span id="hum_max_24h">...</span> %</p>
+          <p>Мин. влажность: <span id="hum_min_24h">...</span> %</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Нижний информационный блок с версией и названием темы -->
+  <div class="text_down">
+    IoT-Light System v1.0.0 (Pre-Realese)<br>
+    <a id="theme-name">Standart v1 | By FireTIA</a>
+  </div>
+
+  <script>
+    // Функция для добавления CSRF-токена в запрос
+    function csrfFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      if (token) {
+        options.headers['X-CSRFToken'] = token;
+      }
+      return fetch(url, options);
+    }
+
+    function goBack() {
+      window.location.href = "/Menu.html"
+    }
+
+    // Функция обновления статистики для указанного интервала
+    function updateStatField(interval, stats) {
+      if (stats) {
+        document.getElementById('temp_max_' + interval).textContent = stats.temp_max.toFixed(1);
+        document.getElementById('temp_min_' + interval).textContent = stats.temp_min.toFixed(1);
+        document.getElementById('hum_max_' + interval).textContent = stats.hum_max.toFixed(1);
+        document.getElementById('hum_min_' + interval).textContent = stats.hum_min.toFixed(1);
+      } else {
+        document.getElementById('temp_max_' + interval).textContent = 'нет данных';
+        document.getElementById('temp_min_' + interval).textContent = 'нет данных';
+        document.getElementById('hum_max_' + interval).textContent = 'нет данных';
+        document.getElementById('hum_min_' + interval).textContent = 'нет данных';
+      }
+    }
+
+    // Функция получения данных о погоде
+    function fetchWeatherData() {
+      csrfFetch('/weather_data')
+        .then(response => response.json())
+        .then(data => {
+          // Обновляем текущие показатели
+          if (data.temperature === null || data.humidity === null) {
+            document.getElementById('temp').textContent = 'нет данных';
+            document.getElementById('hum').textContent = 'нет данных';
+          } else {
+            document.getElementById('temp').textContent = data.temperature.toFixed(1);
+            document.getElementById('hum').textContent = data.humidity.toFixed(1);
+          }
+          // Обновляем статистику, если она присутствует
+          if (data.stats) {
+            updateStatField('1m', data.stats['1m']);
+            updateStatField('5m', data.stats['5m']);
+            updateStatField('15m', data.stats['15m']);
+            updateStatField('30m', data.stats['30m']);
+            updateStatField('60m', data.stats['60m']);
+            updateStatField('2h', data.stats['2h']);
+            updateStatField('4h', data.stats['4h']);
+            updateStatField('6h', data.stats['6h']);
+            updateStatField('12h', data.stats['12h']);
+            updateStatField('24h', data.stats['24h']);
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка при получении погоды:', error);
+        });
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', fetchWeatherData);
+
+    // Автообновление
+    let autoUpdateInterval = null;
+    document.getElementById('autoUpdateCheckbox').addEventListener('change', function() {
+      if (this.checked) {
+        autoUpdateInterval = setInterval(fetchWeatherData, 5000);
+      } else {
+        clearInterval(autoUpdateInterval);
+      }
+    });
+
+    // Инициализация сворачиваемых блоков
+    document.addEventListener("DOMContentLoaded", function() {
+      var coll = document.getElementsByClassName("collapsible");
+      for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      }
+    });
+    // Функция для динамической установки тени на основе цвета устройства
+    function updateDeviceColorShadow() {
+      csrfFetch('/get_device_info')
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            // Берём цвет первого устройства из полученного массива
+            const adjustedColor = data[0].color;  // {r: ..., g: ..., b: ...}
+            // Применяем динамическую тень к нужным элементам
+            const currentColorDiv_currentColor = document.getElementById('currentColorDiv_currentColor');
+            const currentColorDiv_selectedColorDisplay = document.getElementById('currentColorDiv_selectedColorDisplay');
+            if (currentColorDiv_currentColor) {
+              currentColorDiv_currentColor.style.boxShadow = `0px 4px 10px rgba(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}, 0.7)`;
+            }
+            if (currentColorDiv_selectedColorDisplay) {
+              currentColorDiv_selectedColorDisplay.style.boxShadow = `0px 4px 10px rgba(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}, 0.7)`;
+            }
+            // Применяем тень ко всем карточкам
+            document.querySelectorAll('.card').forEach(card => {
+              card.style.boxShadow = `0px 4px 10px rgba(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}, 0.7)`;
+            });
+            document.querySelectorAll('.btn_up').forEach(btn_up => {
+              btn_up.style.boxShadow = `0px 2px 10px rgba(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}, 0.3)`;
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка получения информации об устройстве:', error);
+        });
+    }
+
+    // Вызов функции при загрузке страницы и/или по интервалу, если нужно регулярно обновлять тень
+    window.addEventListener('load', updateDeviceColorShadow);
+    // Например, если хочется обновлять цвет каждую минуту:
+    // setInterval(updateDeviceColorShadow, 60000);
+
+
+    // При загрузке страницы получаем данные
+    window.onload = fetchWeatherData;
+  </script>
+</body>
+</html>

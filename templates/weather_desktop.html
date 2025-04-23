@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Desktop | IoT</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: rgba(0, 0, 0, 0); /* если нет картинки — пусть будет тёмный фон */
+      transition: background-image 0.5s ease;
+    }
+    /* Позиции панели */
+    .weather-panel {
+        position: fixed;
+        max-width: 260px;
+        padding: 15px 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: #ffffffcc;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        z-index: 999;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.15);
+    }
+
+    .weather-panel h3 {
+        margin-top: 5px;
+        margin-bottom: 10px;
+        font-size: 15px;
+        color: #00eaff;
+    }
+    .weather-panel p {
+        margin: 4px 0;
+    }
+
+    .weather-move {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        opacity: 0.7;
+        transition: transform 0.2s;
+      }
+      
+    .weather-move:hover {
+        transform: rotate(90deg);
+        opacity: 1;
+    }
+      
+      .weather-pos-1 { top: 20px; right: 20px; }
+      .weather-pos-2 { top: 50%; right: 20px; transform: translateY(-50%); }
+      .weather-pos-3 { bottom: 20px; right: 20px; }
+      .weather-pos-4 { top: 20px; left: 20px; }
+      .weather-pos-5 { top: 50%; left: 20px; transform: translateY(-50%); }
+      .weather-pos-6 { bottom: 20px; left: 20px; }
+      
+    .weather-panel.following {
+        opacity: 0.95;
+        transition: none;
+        pointer-events: none;
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="weather-panel">
+    <h3>Погода внутри (BME280)</h3>
+    <p>Температура: <span id="temp_bme">--</span>°C</p>
+    <p>Влажность: <span id="hum_bme">--</span>%</p>
+    <p>Давление: <span id="press_bme">--</span> hPa</p>
+    <p>Прогноз: <span id="forecast_weather_bme">--</span></p>
+    <p>Источник: <span id="data_source">--</span></p>
+  
+    <h3>Погода с улицы (DHT22)</h3>
+    <p>Температура: <span id="temp_dht">--</span>°C</p>
+    <p>Влажность: <span id="hum_dht">--</span>%</p>
+    <span class="weather-move" title="Поменять позицию">📍</span>
+  </div>
+  
+
+  <script>
+    // Функция для добавления CSRF-токена в запрос
+    function csrfFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      if (token) {
+        options.headers['X-CSRFToken'] = token;
+      }
+      return fetch(url, options);
+    }
+    
+    // Обновляем погоду каждые 10 секунд
+    setInterval(fetchWeatherData, 10000);
+    fetchWeatherData();
+
+
+    // Функция получения данных о погоде
+    function fetchWeatherData() {
+      csrfFetch('/weather_data')
+        .then(response => response.json())
+        .then(data => {
+          // Обновляем данные для BME280
+          if (data.bme) {
+            if (data.bme.temperature === null || data.bme.humidity === null) {
+              document.getElementById('temp_bme').textContent = 'нет данных';
+              document.getElementById('hum_bme').textContent = 'нет данных';
+              document.getElementById('press_bme').textContent = 'нет данных';
+              document.getElementById('forecast_weather_bme').textContent = 'нет данных';
+              document.getElementById('data_source').textContent = 'нет данных';
+            } else {
+              document.getElementById('temp_bme').textContent = data.bme.temperature.toFixed(1);
+              document.getElementById('hum_bme').textContent = data.bme.humidity.toFixed(1);
+              document.getElementById('press_bme').textContent = data.bme.pressure ? data.bme.pressure.toFixed(1) : 'нет данных';
+              document.getElementById('forecast_weather_bme').textContent = data.bme.forecast_weather;
+              document.getElementById('data_source').textContent = data.bme.source;  // вывод источника данных
+            }
+          }
+
+          // Обновляем данные для DHT22
+          if (data.dht) {
+            if (data.dht.temperature === null || data.dht.humidity === null) {
+              document.getElementById('temp_dht').textContent = 'нет данных';
+              document.getElementById('hum_dht').textContent = 'нет данных';
+            } else {
+              document.getElementById('temp_dht').textContent = data.dht.temperature.toFixed(1);
+              document.getElementById('hum_dht').textContent = data.dht.humidity.toFixed(1);
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка при получении погоды:', error);
+        });
+    }
+
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const baseURL = `${location.protocol}//${location.hostname}${location.port ? `:${location.port}` : ''}`;
+      
+      const soundUp = document.getElementById('sound-up');
+      const soundDown = document.getElementById('sound-down');
+
+      if (soundUp && soundDown) {
+        soundUp.src = `${baseURL}/sound/beginning.mp3`;
+        soundDown.src = `${baseURL}/sound/pipes.mp3`;
+      } else {
+        console.warn('⚠️ Элементы аудио не найдены в DOM');
+      }
+    });
+
+
+    // При загрузке страницы сначала подгружаем список заметок
+    window.addEventListener('load', () => {
+
+      //updateDeviceColorShadow(); // динамическая тень (если нужно)
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const weatherPanel = document.querySelector('.weather-panel');
+    const moveBtn = document.querySelector('.weather-move');
+    let posIndex = localStorage.getItem('weatherPanelPos') || "1";
+    let clickTimer = null;
+    let followMode = false;
+
+    function applyPosition(index) {
+      weatherPanel.classList.remove(
+        'weather-pos-1', 'weather-pos-2', 'weather-pos-3',
+        'weather-pos-4', 'weather-pos-5', 'weather-pos-6', 'weather-pos-custom'
+      );
+
+      if (index === "custom") {
+        const pos = JSON.parse(localStorage.getItem('weatherPanelCustomPos') || "{}");
+        if (pos && pos.left !== undefined && pos.top !== undefined) {
+          weatherPanel.style.left = pos.left + "px";
+          weatherPanel.style.top = pos.top + "px";
+          weatherPanel.style.right = "auto";
+          weatherPanel.style.bottom = "auto";
+          weatherPanel.style.transform = "none";
+          weatherPanel.classList.add('weather-pos-custom');
+        }
+      } else {
+        weatherPanel.style.left = "";
+        weatherPanel.style.top = "";
+        weatherPanel.style.right = "";
+        weatherPanel.style.bottom = "";
+        weatherPanel.style.transform = "";
+        weatherPanel.classList.add(`weather-pos-${index}`);
+      }
+    }
+
+    // === FOLLOW MODE ===
+    function startFollowMode() {
+      followMode = true;
+      moveBtn.textContent = "🖱";
+      document.addEventListener("mousemove", followMouse);
+    }
+
+    function stopFollowMode() {
+      followMode = false;
+      moveBtn.textContent = "📍";
+      document.removeEventListener("mousemove", followMouse);
+
+      // Сохраняем как custom
+      localStorage.setItem("weatherPanelPos", "custom");
+      localStorage.setItem("weatherPanelCustomPos", JSON.stringify({
+        left: weatherPanel.offsetLeft,
+        top: weatherPanel.offsetTop
+      }));
+    }
+
+    function followMouse(e) {
+      const shiftX = -200; // чтобы панель не прилипала к самому курсору
+      const shiftY = -8;
+      weatherPanel.style.left = e.pageX + shiftX + "px";
+      weatherPanel.style.top = e.pageY + shiftY + "px";
+      weatherPanel.style.right = "auto";
+      weatherPanel.style.bottom = "auto";
+      weatherPanel.style.transform = "none";
+    }
+
+    // === Смена позиции (если НЕ в followMode)
+    moveBtn.addEventListener("click", () => {
+      if (clickTimer) return;
+
+      clickTimer = setTimeout(() => {
+        if (!followMode) {
+          posIndex = posIndex === "6" ? "1" : (parseInt(posIndex) + 1).toString();
+          localStorage.setItem('weatherPanelPos', posIndex);
+          applyPosition(posIndex);
+        }
+        clickTimer = null;
+      }, 250);
+    });
+
+    // === Вкл/Выкл следование
+    moveBtn.addEventListener("dblclick", () => {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+
+      if (!followMode) {
+        startFollowMode();
+      } else {
+        stopFollowMode();
+      }
+    });
+
+    applyPosition(posIndex);
+
+  </script>
+<audio id="sound-up" preload="auto"></audio>
+<audio id="sound-down" preload="auto"></audio>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>RGBSyncWeb - Документация</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    /* Контейнер документации с градиентной обводкой */
+    .doc-container {
+      position: relative; /* для псевдоэлементов */
+      width: 700px;
+      max-width: 90%;
+      margin: 40px 0;
+      padding: 30px;
+      border-radius: 10px;
+      background-color: #1e1e1e;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Анимированная градиентная рамка */
+    .doc-container::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: inherit;
+      background: linear-gradient(
+        45deg,
+        #fb0094, #0000ff, #00ff00, #ffff00, #ff0000,
+        #fb0094, #0000ff, #00ff00, #ffff00, #ff0000
+      );
+      background-size: 400%;
+      z-index: -1;
+      animation: animate 20s linear infinite;
+    }
+
+    .doc-container::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: inherit;
+      background: linear-gradient(
+        45deg,
+        #fb0094, #0000ff, #00ff00, #ffff00, #ff0000,
+        #fb0094, #0000ff, #00ff00, #ffff00, #ff0000
+      );
+      background-size: 400%;
+      z-index: -2;
+      filter: blur(15px);
+      animation: animate 20s linear infinite;
+    }
+
+    @keyframes animate {
+      0% {
+        background-position: 0 0;
+      }
+      50% {
+        background-position: 400% 0;
+      }
+      100% {
+        background-position: 0 0;
+      }
+    }
+
+    /* Стили заголовков и текста */
+    h1 {
+      margin-top: 4px;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-weight: 400;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+    }
+    p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    /* Стиль для "Содержания" (якоря) */
+    .toc {
+      margin-bottom: 20px;
+      padding-left: 20px;
+    }
+    .toc li {
+      margin: 5px 0;
+    }
+    .toc a {
+      color: #3b82f6;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .toc a:hover {
+      color: #1fa1f2;
+    }
+
+    /* Стиль для кнопки "Назад" */
+    button {
+      position: absolute;
+      left: 35%;
+      top: 0;
+      background-color: #3b82f6;
+      color: #fff;
+      border: none;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 15px;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="doc-container">
+    <button onclick="goBack()">Назад в панель управления</button>
+    <h1>IoT-Light System v1.0.0 (Release b1) - Документация</h1>
+
+    <ul class="toc">
+      <li><a href="#arduino-sketches">Arduino / ESP32 Скетчи</a></li>
+      <li><a href="#weather-module">Модуль сбора погоды</a></li>
+      <li><a href="#openrgb">Интеграция с OpenRGB</a></li>
+      <li><a href="#web-panel">WEB-панель и интерфейс</a></li>
+      <li><a href="#config">Настройка конфигурации</a></li>
+      <li><a href="#known-issues">Известные проблемы</a></li>
+    </ul>
+
+    <h2 id="arduino-sketches">Скетчи для Arduino и ESP32</h2>
+    <p>
+      В папке <code>IoT/modules/Arduino_Sketch</code> находятся скетчи:
+    </p>
+    <ul>
+      <li><b>Arduino_UNO-Get-info-DHT22</b> — базовый вывод температуры и влажности с DHT22.</li>
+      <li><b>Arduino_UNO-Get-info-DHT22_v2</b> — улучшенная версия с более стабильной отправкой по Serial.</li>
+      <li><b>Arduino_UNO-Get-info-DHT22--BME280</b> — скетч, который читает оба датчика: DHT22 и BME280 и отправляет данные в одном формате.</li>
+      <li><b>Arduino_ESP32-Get-info-BME280</b> — ESP32 как Wi-Fi точка доступа. Отправляет данные с BME280 в Serial и отображает их на странице http://192.168.4.1</li>
+    </ul>
+
+    <h2 id="weather-module">Модуль сбора данных о погоде</h2>
+    <p>
+      Модуль <code>weather_logger.py</code> отвечает за:
+    </p>
+    <ul>
+      <li>Чтение показаний температуры, влажности и давления по Serial с Arduino/ESP32</li>
+      <li>Отдельную обработку данных от <b>BME280</b> и <b>DHT22</b></li>
+      <li>Логирование показаний в <code>JSON</code>-файлы</li>
+      <li>Генерацию PNG-графиков на основе истории</li>
+      <li>Поддержку статистики по интервалам (1м, 5м, 1ч и т.д.)</li>
+    </ul>
+
+    <h2 id="openrgb">Интеграция с OpenRGB</h2>
+    <p>
+      Если параметр <code>"OpenRGB_enabled": "True"</code> в конфигурации, система подключается к <b>OpenRGB SDK Server</b> по сети и позволяет:
+    </p>
+    <ul>
+      <li>Управлять подсветкой RAM, GPU, FAN, материнской платы и других компонентов</li>
+      <li>Использовать цвета как визуальный индикатор погоды или температуры</li>
+      <li>Реализовать эффекты через OpenRGB API (например, пульсация, бегущие цвета)</li>
+    </ul>
+    <p>
+      Перед использованием убедитесь, что OpenRGB запущен с включённым SDK Server (настройка в UI или параметр <code>--server</code> при запуске).</p>
+
+    <h2 id="web-panel">WEB-панель и интерфейс</h2>
+    <p>
+      Веб-интерфейс доступен по адресу <code>/weather</code> и состоит из:
+    </p>
+    <ul>
+      <li>HTML-шаблона <code>weather.html</code> — отображает актуальные показания и статистику</li>
+      <li>Эндпоинта <code>/weather_data</code> — отдаёт JSON с данными по BME280 и DHT22</li>
+    </ul>
+    <p>
+      Интерфейс позволяет:
+    </p>
+    <ul>
+      <li>Видеть текущие показания температуры, влажности, давления</li>
+      <li>Разделять данные на «внутреннюю» (BME280) и «внешнюю» (DHT22) погоду</li>
+      <li>Просматривать статистику в сворачиваемых блоках</li>
+      <li>Включать автообновление данных</li>
+    </ul>
+
+    <h2 id="config">Настройка конфигурации (Setting.json)</h2>
+    <p>Основные параметры конфигурации IoT-Light System:</p>
+    <pre><code>{
+  "password": "pass",                     // пароль для входа в веб-панель
+  "MAX_ATTEMPTS": 5,                       // попытки входа до блокировки
+  "LOCKOUT_TIME_SECONDS": 300,            // время блокировки (сек)
+
+  "Acces_type": "Manual_IP",              // Manual_IP или Local
+  "Manual_IP_setup": "192.168.0.112",     // если выбран Manual_IP — сюда вводим IP
+  "Port_WEB": "5000",                     // порт запуска Flask-сервера
+
+  "OpenURL": "False",                     // запускать ли браузер при старте
+  "TimeOut_action": 50000,                // таймер действий (мс)
+
+  "OpenRGB_enabled": "True",              // включить подключение к API серверу OpenRGB
+  "GpuStat_enabled": "True",              // включить отображение нагрузки GPU только для Nvidia карт
+
+  "Arduino_Weather_Module": "True",       // включить модуль погоды (Serial)
+  "SERIAL_PORT_ARDUINO": "COM3",          // порт для подключения Arduino
+  "BAUD_RATE_ARDUINO": 9600,              // скорость порта
+
+  "secret_key": "N/A"                  // секретный ключ для сессий Flask
+}</code></pre>
+    <p>Для активации функций (например, OpenRGB, GPU мониторинга, погоды) необходимо установить <code>"True"</code> в соответствующих полях.</p>
+
+    <h2 id="known-issues">Известные проблемы</h2>
+    <p>
+      1. <b>Некорректное значение влажности у BME280 после пайки</b><br>
+      Сенсор может залипать на высоких значениях после контакта со спиртом/флюсом. Нужно дать время на высыхание.
+    </p>
+    <p>
+      2. <b>ESP32 не определяется в системе</b><br>
+      Установите драйвер CH340: <a href="https://www.wch.cn/download/CH341SER_EXE.html">CH341SER</a>
+    </p>
+    <p>
+      2-1. <b>ESP32 по Wi-Fi долго получает данные, и в начале запуска нету данных</b><br>
+      В скрипте стоит задержка, на опрос ESP32. Модуль <code>weather_logger.py</code> измените значение <code>time.sleep(30)  # проверяем раз в 30 секунд</code> на 360 строке.
+    </p>
+    <p>
+      3. <b>Ошибка в Python: 'module serial has no attribute Serial'</b><br>
+      Убедитесь, что нет файла <code>serial.py</code> в папке с проектом. Установите <code>pyserial</code> через <code>pip install pyserial</code>
+    </p>
+    <p>
+      4. <b>Не рабоютат некоторый функционал управления подсветкой</b><br>
+      Убедитесь, что нет файла <code>serial.py</code> в папке с проектом. Установите <code>pyserial</code> через <code>pip install pyserial</code>
+    </p>
+  </div>
+  
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+
+</body>
+</html>

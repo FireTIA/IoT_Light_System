@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalOpenRGB - 403</title>
+  <style>
+    /* Общие стили */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: rgb(255, 255, 255);
+    }
+
+    /* Стили для иконки переключения темы */
+    .theme-toggle {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      background: url("{{ url_for('static', filename='light-mode-icon.png') }}") no-repeat center;
+      background-size: cover;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+      text-shadow: 0 0 10px #00daae, 0 0 20px #00c9a1, 0 0 30px #005645;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+  </style>
+  <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='Login_Standart.css') }}">
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Ошибка 403</h2>
+    <label style="padding-left: 0%;">Похоже что пароль не верный</label><br><br>
+    <button onclick="goBack()">Обратно</button>
+  </div>
+
+  <div class="text_down" >IoT-Light System v1.0.0 (Realese)<br><a id="theme-name">Standart v1 | By FireTIA</a></div>
+
+  <div class="theme-toggle" onclick="toggleStyle()">🔄</div>
+
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+
+    function toggleStyle() {
+        let theme = document.getElementById("theme-style");
+        let themeToggle = document.querySelector(".theme-toggle");
+        let themeName = document.getElementById("theme-name");
+
+        if (theme.getAttribute("href").includes("Login_Standart.css")) {
+            themeName.textContent = "CrystalTheme v1 | By FireTIA";
+            theme.setAttribute("href", "{{ url_for('static', filename='Login_Crystal.css') }}");
+            localStorage.setItem("theme", "Login_Crystal.css");
+        } else {
+            themeName.textContent = "Standart v1 | By FireTIA";
+            theme.setAttribute("href", "{{ url_for('static', filename='Login_Standart.css') }}");
+            localStorage.setItem("theme", "Login_Standart.css");
+        }
+    }
+    // При загрузке страницы проверяем, есть ли сохранённая тема
+    window.onload = function () {
+        let savedTheme = localStorage.getItem("theme");
+        let theme = document.getElementById("theme-style");
+        let themeToggle = document.querySelector(".theme-toggle");
+        let themeName = document.getElementById("theme-name");
+
+        if (savedTheme) {
+            theme.setAttribute("href", "{{ url_for('static', filename='') }}" + savedTheme);
+            
+            // Меняем иконку, если тема тёмная
+            if (savedTheme.includes("Login_Crystal.css")) {
+                themeName.textContent = "CrystalTheme v1 | By FireTIA";
+            } else {
+                themeName.textContent = "Standart v1 | By FireTIA";
+            }
+        }
+    };
+  </script>
+
+</body>
+</html>
