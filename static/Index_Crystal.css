@@ -1,0 +1,117 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16), 0px 3px 6px rgba(0, 0, 0, 0.23);
+  }
+
+  h1, h2 {
+    margin: 0 0 10px;
+    font-weight: 400;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  select, input[type="color"], input[type="range"], button {
+    background-color: #2c2c2c;
+    border: none;
+    padding: 10px;
+    color: #ffffff;
+    border-radius: 4px;
+    outline: none;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: rgba(21, 101, 192, 0.8);
+  }
+
+  #currentColor {
+    width: 100px;
+    height: 50px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .color-theme-btns button {
+    margin-top: 10px;
+    display: inline-block;
+  }
+
+  .Panel_Night_Orange {
+    background-color: #6a1300;
+  }
+
+  .Panel_Night_Orange:hover {
+    background-color: #7f1700;
+  }
+
+  .color-theme-btns button {
+    margin: 5px;
+  }
+
+  .color-theme-btns {
+    margin-top: 15px;
+  }
+
+  .color-panel {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .color-panel:hover {
+    transform: scale(1.1); /* Увеличиваем панель при наведении */
+  }
+
+  .color-panel:after {
+    content: attr(title); /* Показываем название цвета */
+    position: absolute;
+    bottom: -25px; /* Под панелью */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: none;
+  }
+
+  .color-panel:hover:after {
+    display: block;
+  }

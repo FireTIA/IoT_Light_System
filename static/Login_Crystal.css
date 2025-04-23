@@ -1,0 +1,163 @@
+
+
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #121212;
+    color: white;
+    margin: 0;
+  }
+
+  .login-container {
+    position: relative; /* нужно для псевдоэлементов */
+    width: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #1e1e1eaa;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    /* убираем анимацию rainbow-shadow, раз её нет в коде
+       и будем использовать keyframes animate background-color: #1e1e1e; */
+  }
+
+  /* Псевдоэлемент для градиентной рамки */
+  .login-container::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: inherit; /* чтобы повторять скругление */
+    background: linear-gradient(
+      45deg,
+      #fb0094, #0000ff, #00ff00, #ffff00, #ff0000,
+      #fb0094, #0000ff, #00ff00, #ffff00, #ff0000
+    );
+    background-size: 400%;
+    z-index: -5; /* псевдоэлемент за блоком */
+    animation: gradientAnimation 20s linear infinite;
+  }
+
+  /* Дополнительный слой размытия, если нужно «сияние» */
+  .login-container::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: inherit;
+    background: linear-gradient(
+      45deg,
+      #fb0094, #0000ff, #00ff00, #ffff00, #ff0000,
+      #fb0094, #0000ff, #00ff00, #ffff00, #ff0000
+    );
+    background-size: 400%;
+    z-index: -6;
+    filter: blur(15px); /* регулируйте blur под себя */
+    animation: gradientAnimation 20s linear infinite;
+  }
+
+  @keyframes animate {
+    0% {
+      background-position: 0 0;
+    }
+    50% {
+      background-position: 400% 0;
+    }
+    100% {
+      background-position: 0 0;
+    }
+  }
+
+  /* Стили для формы */
+  input {
+    width: 93%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    background-color: rgba(0, 132, 59, 0.5); /* полупрозрачный фон */
+    backdrop-filter: blur(5px);        /* размытие заднего фона */
+  }
+  button:hover {
+    background-color: rgba(0, 165, 74, 0.5); /* полупрозрачный фон */
+  }
+  label {
+      color: #ffffff;
+      padding-left: 22%;
+  }
+  /* Контейнер, внутри которого будет "стеклянный" инпут с анимированной градиентной рамкой */
+  .input-container {
+    position: relative;
+    display: inline-block;
+    width: 92%;       /* Можно подстроить под нужную ширину */
+    border-radius: 5px;
+    margin: 10px 0;    /* Отступ сверху/снизу */
+  }
+
+  
+
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Стиль самого поля ввода */
+  .input-container input {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    background: rgba(68, 68, 68, 0.5); /* полупрозрачный фон */
+    backdrop-filter: blur(5px);        /* размытие заднего фона */
+    outline: none;
+  }
+  
+  .text_down {
+    background-color: #003d4240;
+    position: fixed;
+    bottom: 0px; /* отступ от нижнего края */
+    left: 50%;
+    transform: translateX(-50%); /* центрирует элемент по горизонтали */
+    color: #ffffff45;
+    text-align: center;
+    width: 16%; /* чтобы текст всегда был в центре */
+
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 1px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 1px;
+  }
+
+  /* Принудительно меняем стиль для мобильных (до 768px ширины) */
+@media screen and (max-width: 768px) {
+  .text_down {
+    width: 90%; /* Занимает 90% ширины экрана */
+    font-size: 14px; /* Уменьшаем шрифт */
+    padding: 8px; /* Добавляем отступы */
+  }
+}

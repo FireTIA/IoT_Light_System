@@ -1,0 +1,90 @@
+.vk-keyboard {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e1e1e;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .vk-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .vk-key {
+    background: #2c2c2c;
+    color: white;
+    margin: 5px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 16px;
+    transition: background 0.2s;
+  }
+  
+  .vk-key:hover {
+    background: #3a3a3a;
+  }
+  
+  .vk-key[data-action="backspace"] {
+    background: #ff2d2d;
+  }
+  
+  .vk-key[data-action="enter"] {
+    background: #3b82f6;
+  }
+  
+  .vk-key[data-action="caps"] {
+    background: #00c3ff;
+    color: #fff;
+  }
+  
+  .vk-key[data-action="caps"].active {
+    background: #008ecc;
+    box-shadow: 0 0 10px #00ffff88;
+  }
+  
+  .vk-toggle {
+    position: fixed;
+    bottom: 80px;
+    left: 10px;
+    font-size: 24px;
+    background: #121212;
+    color: #ffffffcc;
+    border-radius: 50%;
+    width: 20;
+    height: 20;
+    text-align: center;
+    line-height: 34px;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 0 8px rgba(0,255,255,0.3);
+    user-select: none;
+    transition: transform 0.2s ease;
+  }
+  
+  .vk-toggle:hover {
+    transform: scale(1.1);
+  }
+  
+  .vk-keyboard {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  
+  .vk-keyboard.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  
+  
