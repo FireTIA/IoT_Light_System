@@ -1,0 +1,10 @@
+# Библиотеки основные для IoT LS
+# Version: 1.0
+# Type_vesrion: Dev
+# Source: https://github.com/
+# Author: FireTIA
+# LIB ---------------------------------->
+
+Colorama
+
+# <---------------------------------- LIB END
