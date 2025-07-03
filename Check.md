@@ -2,7 +2,9 @@ IoT-Light System Supported
 
 
 VERSION = "1.0"
+
 TYPE_VERSION = "Dev"
+
 AUTHOR = "FireTIA"
 
 
