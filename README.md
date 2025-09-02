@@ -10,7 +10,7 @@
 
 ---
 
-## Windows (Python)
+## [Windows (Python)](https://github.com/FireTIA/IoT_Light_System/tree/IoT_Server_Windows_DEV)
 
 **Версия Windows:** На переписании старого типа...
 
@@ -18,13 +18,13 @@
 
 Можно испробовать старую версию Pre-Realese: [> Клик <](https://github.com/FireTIA/IoT_Light_System/tree/IoT_Server_Windows_DEV)
 
-## Android (Termux|Termux-API|Python)
+## [Android (Termux|Termux-API|Python)](https://github.com/FireTIA/IoT_Light_System/tree/IoT_Android_Termux_DEV)
 
-**Версия:** В разработке...
+**Версия:** N/A...
 
-**Статус:** отложено...
+**Статус:** Прототип есть, но отложено...
 
-## Arduino устройства (Arduino Uno|ESP32)
+## [Arduino устройства (Arduino Uno|ESP32)](https://github.com/FireTIA/IoT_Light_System/tree/IoT_Arduino_ESP32)
 
 **Версия:** N/A...
 
