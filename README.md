@@ -16,6 +16,8 @@
 
 **Статус:** Продолжение работы...
 
+Можно испробовать старую версию Pre-Realese: [> Клик <](https://github.com/FireTIA/IoT_Light_System/tree/IoT_Server_Windows_DEV)
+
 ## Android (Termux|Termux-API|Python)
 
 **Версия:** В разработке...
