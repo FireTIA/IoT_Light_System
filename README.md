@@ -38,6 +38,7 @@
 - Flask + Flask-SocketIO + WTForms CSRF
 - PySide6
 - Arduino / ESP32 (через COM и Wi-Fi)
+- Tinytuya (Да будет свет!)
 - psutil, pycaw, matplotlib, colorama, requests, etc.
 
 ---
