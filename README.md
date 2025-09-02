@@ -8,7 +8,7 @@
 
 ## Windows (Python)
 
-- Реализованный функционал > Клик <
+- Реализованный функционал [> Клик <](https://github.com/FireTIA/IoT_Light_System/blob/info/Windows/Implemented_Features.md)
 - Планы на будущее > Клик <
 - Установка и настройка > Клик <
 - Обзор веб панели > Клик <
