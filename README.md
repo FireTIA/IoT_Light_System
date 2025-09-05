@@ -45,11 +45,11 @@
 
 ### 🖥️ Страница входа
 
-https://github.com/FireTIA/IoT_Light_System/blob/IoT_Server_Windows_DEV/images_rewrite/login_page.png?raw=true
+![Страница входа](https://github.com/FireTIA/IoT_Light_System/blob/IoT_Server_Windows_DEV/images_rewrite/login_page.png?raw=true)
 
 ### 🖥️ Главная страница
 
-https://github.com/FireTIA/IoT_Light_System/blob/IoT_Server_Windows_DEV/images_rewrite/main_page.png?raw=true
+![Главная страница](https://github.com/FireTIA/IoT_Light_System/blob/IoT_Server_Windows_DEV/images_rewrite/main_page.png?raw=true)
 
 ---
 
